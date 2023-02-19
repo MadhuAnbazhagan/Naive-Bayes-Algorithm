@@ -1,0 +1,56 @@
+#Importing Modules
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+#Loadind Dataset
+df=pd.read_table("smsspamcollection.tsv")
+df
+
+#Splitting Input and Output
+#input
+x=df["message"]
+x
+#output
+y=df["label"]
+y
+
+#Converting text file to continuous data
+from sklearn.feature_extraction.text import CountVectorizer
+cv=CountVectorizer()
+x=cv.fit_transform(x).toarray()
+
+#Splitting Training and Testing Data
+from sklearn.model_selection import train_test_split
+xtrain,xtest,ytrain,ytest=train_test_split(x,y,test_size=.3,random_state=1)
+
+#impoting naive bayes types Gaussian,Multinomial,Bernoulli
+from sklearn.naive_bayes import GaussianNB,MultinomialNB,BernoulliNB
+from sklearn.metrics import classification_report
+
+#Using function we fitting,predicting and finding accuracy
+def mymodel(model):
+    model.fit(xtrain,ytrain)
+    ypred=model.predict(xtest)
+    ypred
+    train=model.score(xtrain,ytrain)
+    test=model.score(xtest,ytest)
+    print(f"Training Accuracy : {train}\nTesting Accuracy : {test}")
+    print(classification_report(ytest,ypred))
+    return model
+    
+#Finding using GaussianNB
+gnb=mymodel(GaussianNB())
+gnb
+#Finding using BernoulliNB
+bnb=mymodel(BernoulliNB())
+bnb
+#Finding using MultinomialNB
+mnb=mymodel(MultinomialNB())
+mnb
+
+msg1="Congratulations, you've won…!..."
+#Predicting wheather msg1 is spam or ham
+xnew=cv.transform([msg1]).toarray()
+mnb.predict(xnew)[0]
